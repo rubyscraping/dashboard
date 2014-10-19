@@ -4,7 +4,11 @@ class Dashboard < Sinatra::Base
   enable :sessions
 
   get '/login' do
-    redirect '/' if logged_in?
+    if logged_in?
+      redirect '/'
+    else
+      haml :login
+    end
   end
 
   get '/logout' do
