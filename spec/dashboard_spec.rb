@@ -12,40 +12,42 @@ describe Dashboard do
   end
 
   context 'logged in' do
+    let!(:user) { 'store@rubyscraping.com' }
+
     describe 'GET /' do
-      before { get '/' }
+      before { get '/', {}, {'rack.session' => {user: user}} }
       
       it { expect(last_response).to be_ok }
     end
 
     describe 'GET /login' do
       before do
-        get '/login'
+        get '/login', {}, {'rack.session' => {user: user}}
         follow_redirect!
       end
 
-      it { expect(last_response).to be_redirect }
-      it { expect(last_response.url).to eq '/' }
+      it { expect(last_response).to be_ok }
+      it { expect(last_request.url).to eq 'http://example.org/' }
     end
 
     describe 'GET /logout' do
       before do
-        get '/logout'
+        get '/logout', {}, {'rack.session' => {user: user}}
         follow_redirect!
       end
 
-      it { expect(last_response).to be_redirect }
-      it { expect(last_response.url).to eq '/login' }    
+      it { expect(last_response).to be_ok }
+      it { expect(last_request.url).to eq 'http://example.org/login' }    
     end
 
     describe 'POST /login' do
       before do
-        post '/login', login: 'store@rubyscraping.com', password: 'p455woRd'
+        post '/login', {login: 'store@rubyscraping.com', password: 'p455woRd'}, {'rack.session' => {user: user}}
         follow_redirect!
       end
 
-      it { expect(last_response).to be_redirect }
-      it { expect(last_response.url).to eq '/dashboard' }   
+      it { expect(last_response).to be_ok }
+      it { expect(last_request.url).to eq 'http://example.org/' }   
     end
   end
 
@@ -56,8 +58,8 @@ describe Dashboard do
         follow_redirect!
       end
 
-      it { expect(last_response).to be_redirect }
-      it { expect(last_response.url).to eq '/login' }
+      it { expect(last_response).to be_ok }
+      it { expect(last_request.url).to eq 'http://example.org/login' }
     end
 
     describe 'GET /login' do
@@ -72,18 +74,18 @@ describe Dashboard do
         follow_redirect!
       end
 
-      it { expect(last_response).to be_redirect }
-      it { expect(last_response.url).to eq '/login' }
+      it { expect(last_response).to be_ok }
+      it { expect(last_request.url).to eq 'http://example.org/login' }
     end
 
     describe 'POST /login' do
       before do
-        get '/login'
+        post '/login', {login: 'store@rubyscraping.com', password: 'p455woRd'}
         follow_redirect!
       end
 
-      it { expect(last_response).to be_redirect }
-      it { expect(last_response.url).to eq '/' }
+      it { expect(last_response).to be_ok }
+      it { expect(last_request.url).to eq 'http://example.org/' }
     end
   end
 end

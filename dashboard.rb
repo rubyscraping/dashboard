@@ -1,16 +1,33 @@
 require 'sinatra/base'
 
 class Dashboard < Sinatra::Base
+  enable :sessions
 
   get '/login' do
-    'login'
-  end
-
-  get '/' do
-    'dashboard'
+    redirect '/' if logged_in?
   end
 
   get '/logout' do
-    'logout'
+    session[:user] = nil
+    redirect '/login'
+  end
+
+  get '/' do
+    redirect '/login' if !logged_in?
+  end
+
+  post '/login' do
+    if params[:login] == 'store@rubyscraping.com' && params[:password] == 'p455woRd'
+      session[:user] = params[:login]
+      redirect '/'
+    else
+      redirect '/login'
+    end
+  end
+
+  private
+
+  def logged_in?
+    !session[:user].nil?
   end
 end
