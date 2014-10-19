@@ -17,7 +17,11 @@ class Dashboard < Sinatra::Base
   end
 
   get '/' do
-    redirect '/login' if !logged_in?
+    if logged_in?
+      haml :dashboard
+    else
+      redirect '/login'
+    end
   end
 
   post '/login' do
